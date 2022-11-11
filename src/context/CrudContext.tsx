@@ -6,7 +6,7 @@ interface IPropsContext {
     children : React.ReactNode;
 }
 
-type IData ={
+export type IData ={
     id : number ;
     name : string;
     email : string;
@@ -14,20 +14,26 @@ type IData ={
     complete : boolean;
 }
 
-type ICrudContext={
-    data : IData | null;
-    setData : Dispatch<SetStateAction<IData | null>>
+export type ICrudContext={
+    data : IData[] ;
+    setData : Dispatch<SetStateAction<IData[]>>;
+    AddTask : (newTask : IData)=> void;
+    removeTask : (id : number) => void;
+    completeTask : (id : number) => void;
+
 }
-export const CrudContext = createContext <ICrudContext | null>(null)
+export const CrudContext = createContext <ICrudContext>({} as ICrudContext)
 
 
 
 const CrudContextProvider = ({children} : IPropsContext)=>{
 
-    const [data , setData] = useState<IData | null>(null)
+    const [data , setData] = useState<IData[]>([{ id : 1 , name : "hassan amiri" , email : "hassanamiri369@gmail.com" , task : "create crud app" , complete  : false}] as IData[])
+
+    
 
     return (
-        <CrudContext.Provider value={{data , setData}} >
+        <CrudContext.Provider value={{data , setData }} >
             {children}
         </CrudContext.Provider>
     )
