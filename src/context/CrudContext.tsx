@@ -30,10 +30,13 @@ const CrudContextProvider = ({children} : IPropsContext)=>{
 
     const [data , setData] = useState<IData[]>([{ id : 1 , name : "hassan amiri" , email : "hassanamiri369@gmail.com" , task : "create crud app" , complete  : false}] as IData[])
 
-    
+    const AddTask = (newTask : IData) : void =>{
+        setData([...data ,newTask])
+    }
+
 
     return (
-        <CrudContext.Provider value={{data , setData }} >
+        <CrudContext.Provider value={{data , setData ,AddTask }} >
             {children}
         </CrudContext.Provider>
     )
