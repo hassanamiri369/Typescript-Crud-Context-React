@@ -1,5 +1,12 @@
 import React, { useContext, useState, FormEvent } from 'react';
 import Modal from 'react-modal';
+import { BiEdit } from 'react-icons/bi';
+import { TiDelete } from 'react-icons/ti';
+
+import { TfiFaceSmile } from 'react-icons/tfi';
+import { TfiFaceSad } from 'react-icons/tfi';
+
+
 
 // Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
 import { CrudContext } from './context/CrudContext';
@@ -10,13 +17,6 @@ Modal.setAppElement('#root');
 
 
 
-interface IModalData{
-  id : number ;
-  modalName : string;
-  modalEmail :string;
-  modalTask : string;
-  complete : boolean;
-}
 
 
 
@@ -138,12 +138,16 @@ function App() {
           {contextData.data ?
             <div className='container-data'>
               {contextData.data.map((item) => (
-                <div className='content' key={item.id}>
+                <div className={`${item.complete ? "done" : "doing"}`} key={item.id}>
                   <h2>{item.name}</h2>
                   <h2>{item.email}</h2>
+                  
                   <input type={'checkbox'} onChange={() => contextData.completeTask(item.id)} checked={item.complete} /><span>{item.task}</span><br />
-                  <button onClick={() => contextData.removeTask(item.id)}>remove</button>
-                  <button onClick={()=> handleModal(item)}>edit</button>
+                  <span>{item.complete ? <TfiFaceSmile color='green'/> : <TfiFaceSad color='red'/>}</span>
+                  <div className="icons-div">
+                  <TiDelete className='icons' onClick={() => contextData.removeTask(item.id)} color="red" />
+                  <BiEdit className='icons' onClick={()=> handleModal(item)} color="green" />
+                  </div>
                 </div>
               ))}
             </div> :
