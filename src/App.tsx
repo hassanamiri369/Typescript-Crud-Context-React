@@ -1,27 +1,78 @@
-import React , {useContext , useState , FormEvent} from 'react';
+import React, { useContext, useState, FormEvent } from 'react';
+import Modal from 'react-modal';
+
+// Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
 import { CrudContext } from './context/CrudContext';
 import { IData } from './context/CrudContext';
+
+Modal.setAppElement('#root');
+
+
+
+
+interface IModalData{
+  id : number ;
+  modalName : string;
+  modalEmail :string;
+  modalTask : string;
+  complete : boolean;
+}
+
 
 
 function App() {
 
 
   const contextData = useContext(CrudContext)
-  
-  const [name , setName] = useState<string>("")
-  const [email , setEmail] = useState<string>("")
-  const [task , setTask] = useState<string>("")
 
-  const handleSubmit = (e : FormEvent<HTMLFormElement>)=>{
+  const [name, setName] = useState<string>("")
+  const [email, setEmail] = useState<string>("")
+  const [task, setTask] = useState<string>("")
+
+
+  const [modalName , setModalName] = useState("")
+  const [modalEmail , setModalEmail] = useState("")
+  const [modalTask , setModalTask] = useState("")
+
+
+
+  const [modalData , setModalData] = useState<IData >({} as IData)
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+
+  function openModal() {
+    setIsOpen(true);
+
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  const handleModal = (item : IData)=>{
+    setModalData(item)
+    openModal()
+  }
+
+  React.useEffect(()=>{
+
+    setModalName(modalData.name)
+    setModalEmail(modalData.email)
+    setModalTask(modalData.task)
+  } , [modalData])
+
+
+
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const newTask : IData = {id : Number(new Date()) , name , email , task , complete : false}
-    if(!name){
+    const newTask: IData = { id: Number(new Date()), name, email, task, complete: false }
+    if (!name) {
       return alert("نام را وارد کنید ")
     }
-    if(!email){
+    if (!email) {
       return alert("ایمیل را وارد کنید ")
     }
-    if(!task){
+    if (!task) {
       return alert("تسک مورد نظر  را وارد کنید ")
     }
 
@@ -30,64 +81,109 @@ function App() {
     setName("")
     setEmail("")
     setTask("")
-    
+
   }
   
-  console.log(contextData.data)
+  const handleModalSubmit = (e : FormEvent<HTMLFormElement>)=>{
+    e.preventDefault()
+    let updateModalState : IData  = {id : modalData.id , complete  : modalData.complete , name : modalName , task : modalTask , email : modalEmail}
+    contextData.editData(updateModalState )
+    setModalName("")
+    setModalEmail("")
+    setModalTask("")
+    closeModal()
+  }
+  
+
+
+  const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
 
   return (
     <>
       <div className="App">
 
         <div className='add-new-task'>
-          <form onSubmit={(e)=>handleSubmit(e) }>
+          <form onSubmit={(e) => handleSubmit(e)}>
             <div>
               <label>Name </label>
-              <input type={'text'} placeholder="name" value={name} onChange={(e)=> setName(e.target.value)}/>
+              <input type={'text'} placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
             <div>
               <label>email </label>
-              <input type={'text'} placeholder="email" value={email} onChange={(e)=> setEmail(e.target.value)}/>
+              <input type={'text'} placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
 
             <div>
               <label>Task </label>
-              <textarea value={task} onChange={(e)=> setTask(e.target.value)}></textarea>
+              <textarea  value={task} placeholder="task" onChange={(e) => setTask(e.target.value)}></textarea>
             </div>
 
             <div>
-              <button >add task</button>
+              <button type='submit' >add task</button>
             </div>
           </form>
         </div>
-      
-      {contextData.data ? 
-      <div>
-        {contextData.data.map((item) => (
-          <div key={item.id}>
-            <h2>{item.name}</h2>
-            <h2>{item.email}</h2>
-            <input type={'checkbox'} onChange={()=> contextData.completeTask(item.id)} checked={item.complete}/><span>{item.task}</span><br/>
-            <button onClick={()=> contextData.removeTask(item.id) }>remove</button>
-            
-          </div>
-        ))}
-      </div> :
-      
-      "data list is empty !"}
-      {/* {contextData.data.map((item) => (
-          <div key={item.id}>
-            <h2>{item.name}</h2>
-            <h2>{item.email}</h2>
-            <input type={'checkbox'} onChange={()=> contextData.completeTask(item.id)} checked={item.complete}/><p>{item.task}</p>
-            <button onClick={()=> contextData.removeTask(item.id) }>remove</button>
-            
-          </div>
-        ))} */}
 
-  </div>
-  
+        <div >
+          {contextData.data ?
+            <div className='container-data'>
+              {contextData.data.map((item) => (
+                <div className='content' key={item.id}>
+                  <h2>{item.name}</h2>
+                  <h2>{item.email}</h2>
+                  <input type={'checkbox'} onChange={() => contextData.completeTask(item.id)} checked={item.complete} /><span>{item.task}</span><br />
+                  <button onClick={() => contextData.removeTask(item.id)}>remove</button>
+                  <button onClick={()=> handleModal(item)}>edit</button>
+                </div>
+              ))}
+            </div> :
+
+            "data list is empty !"}
+        </div>
+
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+        >
+
+          <button onClick={closeModal}>close</button>
+          <div>I am a modal</div>
+          <form onSubmit={(e)=> handleModalSubmit(e)}>
+          <div>
+              <label>Name </label>
+              <input type={'text'} name="name" placeholder="name" value={modalName} onChange={(e) => setModalName(e.target.value)} />
+            </div>
+
+            <div>
+              <label>email </label>
+              <input type={'text'} name="email" placeholder="email" value={modalEmail} onChange={(e) => setModalEmail(e.target.value)} />
+            </div>
+
+            <div>
+              <label>Task </label>
+              <textarea value={modalTask} name="task" onChange={(e) => setModalTask(e.target.value)}></textarea>
+            </div>
+
+            <div>
+              <button type='submit' >update task</button>
+            </div>
+          </form>
+        </Modal>
+
+
+      </div>
+
     </>
   );
 }
