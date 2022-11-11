@@ -39,9 +39,14 @@ const CrudContextProvider = ({children} : IPropsContext)=>{
         setData(dataAfterRemove)
     }
 
+    const completeTask = (id : number) : void=> {
+        const upDataTask = data.map(item => item.id === id ? {...item , complete : !item.complete} : item)
+        setData(upDataTask)
+    }
+
 
     return (
-        <CrudContext.Provider value={{data , setData ,AddTask,removeTask }} >
+        <CrudContext.Provider value={{data , setData ,AddTask,removeTask ,completeTask }} >
             {children}
         </CrudContext.Provider>
     )
