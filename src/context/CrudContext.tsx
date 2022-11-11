@@ -20,6 +20,7 @@ export type ICrudContext={
     AddTask : (newTask : IData)=> void;
     removeTask : (id : number) => void;
     completeTask : (id : number) => void;
+    editData : (updateModalState : IData) => void
 
 }
 export const CrudContext = createContext <ICrudContext>({} as ICrudContext)
@@ -45,8 +46,20 @@ const CrudContextProvider = ({children} : IPropsContext)=>{
     }
 
 
+    const editData = (updateModalState : IData) => {
+        let newData = updateModalState;
+        let crudData = [...data]
+        let index = data.findIndex(item => item.id === newData.id )
+        crudData[index] = newData;
+        setData(crudData)
+
+    }
+    
+
+
+
     return (
-        <CrudContext.Provider value={{data , setData ,AddTask,removeTask ,completeTask }} >
+        <CrudContext.Provider value={{data , setData ,AddTask,removeTask ,completeTask , editData }} >
             {children}
         </CrudContext.Provider>
     )
