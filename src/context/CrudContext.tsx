@@ -5,6 +5,7 @@ interface IPropsContext {
     children : React.ReactNode;
 }
 
+
 export type IData ={
     id : number ;
     name : string;
@@ -13,6 +14,7 @@ export type IData ={
     complete : boolean;
 }
 
+
 export type ICrudContext={
     data : IData[] ;
     setData : Dispatch<SetStateAction<IData[]>>;
@@ -20,8 +22,9 @@ export type ICrudContext={
     removeTask : (id : number) => void;
     completeTask : (id : number) => void;
     editData : (updateModalState : IData) => void
-
 }
+
+
 export const CrudContext = createContext <ICrudContext>({} as ICrudContext)
 
 
@@ -33,6 +36,7 @@ const CrudContextProvider = ({children} : IPropsContext)=>{
     const AddTask = (newTask : IData) : void =>{
         setData([...data ,newTask])
     }
+
 
     const removeTask = (id : number) : void=>{
         const dataAfterRemove = data.filter(item => item.id !== id)
@@ -51,7 +55,6 @@ const CrudContextProvider = ({children} : IPropsContext)=>{
         let index = data.findIndex(item => item.id === newData.id )
         crudData[index] = newData;
         setData(crudData)
-
     }
     
 
